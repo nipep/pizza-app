@@ -1,32 +1,42 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { addItem } from "../../redux/slices/cartSlice";
-const PizzaBlock = ({
+import { addItem } from "../../redux/slices/cart/slice";
+import { selectCartItemById } from "../../redux/slices/cart/selectors";
+import { cartItemsState } from "../../redux/slices/cart/types";
+
+import { Link } from "react-router-dom";
+type PizzaBlockProps = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  types: number[];
+  sizes: number[];
+  price: number;
+};
+
+const PizzaBlock: React.FC<PizzaBlockProps> = ({
   id,
   imageUrl,
   name,
   types,
   sizes,
   price,
-  category,
-  rating,
 }) => {
   const dispatch = useDispatch();
-  const countItem = useSelector((state) =>
-    state.cart.items.find((obj) => obj.id === id)
-  );
+  const countItem = useSelector(selectCartItemById(id));
   const pizzasTypes = ["Тонкое", "Традиционное"];
   const [sizeOption, setSizeOption] = useState(0);
   const [typeOption, setTypeOption] = useState(0);
   const addCount = countItem ? countItem.count : 0;
   const onAddPizza = () => {
-    const item = {
+    const item: cartItemsState = {
       id,
       imageUrl,
       name,
       price,
-      sizes: sizeOption,
+      size: sizes[sizeOption],
       type: pizzasTypes[typeOption],
+      count: 0,
     };
     dispatch(addItem(item));
   };
@@ -34,29 +44,29 @@ const PizzaBlock = ({
   return (
     <div className="pizza-block__wrapper">
       <div className="pizza-block">
-        <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
-        <h4 className="pizza-block__title">{name}</h4>
+        <Link to={`/pizza/${id}`} key={id}>
+          <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+          <h4 className="pizza-block__title">{name}</h4>
+        </Link>
         <div className="pizza-block__selector">
           <ul>
-            {types.map((type, i) => (
+            {types.map((type: number, i: number) => (
               <li
                 key={i}
                 onClick={() => setTypeOption(i)}
-                className={
-                  typeOption === i || type.length === 1 ? "active" : ""
-                }
+                className={typeOption === i ? "active" : ""}
               >
                 {pizzasTypes[type]}
               </li>
             ))}
           </ul>
           <ul>
-            {sizes.map((size, i) => (
+            {sizes.map((size: number, i: number) => (
               <li
                 key={i}
                 onClick={() => setSizeOption(i)}
                 className={
-                  sizeOption === i || size.length === 1 ? "active" : ""
+                  sizeOption === i || String(size).length === 1 ? "active" : ""
                 }
               >
                 {size}

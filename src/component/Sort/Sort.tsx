@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
+
+type SortProps = {
+  sortProperty: string;
+  sortName: string;
+  OnChangeSort: (obj: string[]) => void;
+};
 
 export const sortArr = [
   { sortName: "популярности (по возрастанию)", sortProperty: "-rating" },
@@ -9,23 +15,28 @@ export const sortArr = [
   { sortName: "алфавиту (по убыванию)", sortProperty: "name" },
 ];
 
-const Sort = ({ value, OnChangeSort }) => {
+const Sort: React.FC<SortProps> = memo(({ sortName, OnChangeSort }) => {
   const [open, setOpen] = useState(false);
-  const sortRef = useRef();
-  const onClickSort = (i) => {
-    OnChangeSort(i);
+  const sortRef = useRef<HTMLDivElement>(null);
+  const onClickSort = (obj: string[]) => {
+    OnChangeSort(obj);
     setOpen(false);
   };
 
   useEffect(() => {
-    const handlerClickOutside = (e) => {
-      if (!e.composedPath().includes(sortRef.current)) {
+    const handlerClickOutside = (e: MouseEvent) => {
+      const _e = e as MouseEvent & {
+        path: Node[];
+      };
+      if (sortRef.current && !_e.composedPath().includes(sortRef.current)) {
         setOpen(false);
       }
+      // boolean
     };
     document.body.addEventListener("click", handlerClickOutside);
 
-    return () => document.body.removeEventListener("click", handlerClickOutside);
+    return () =>
+      document.body.removeEventListener("click", handlerClickOutside);
   }, []);
 
   return (
@@ -44,16 +55,16 @@ const Sort = ({ value, OnChangeSort }) => {
           />
         </svg>
         <b>Сортировка по:</b>
-        <span onClick={() => setOpen(!open)}>{value.sortName}</span>
+        <span onClick={() => setOpen(!open)}>{sortName}</span>
       </div>
       {open && (
         <div className="sort__popup">
           <ul>
-            {sortArr.map((obj, i) => (
+            {sortArr.map((obj: any, i) => (
               <li
                 key={i}
                 onClick={() => onClickSort(obj)}
-                className={value.sortName === obj.sortName ? "active" : ""}
+                className={sortName === obj.sortName ? "active" : ""}
               >
                 {obj.sortName}
               </li>
@@ -63,6 +74,6 @@ const Sort = ({ value, OnChangeSort }) => {
       )}
     </div>
   );
-};
+});
 
 export default Sort;

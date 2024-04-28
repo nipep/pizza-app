@@ -1,11 +1,22 @@
 import { Link } from "react-router-dom";
 import CartItem from "../component/CartItem/CartItem";
 import { useDispatch, useSelector } from "react-redux";
-import { clearItems } from "../redux/slices/cartSlice";
+import { clearItems } from "../redux/slices/cart/slice";
+import { selectCart } from "../redux/slices/cart/selectors";
+import CartEmpty from "../component/CartItem/CartEmpty";
+import { useEffect, useRef, useState } from "react";
 
-const Cart = () => {
+const Cart: React.FC = () => {
   const dispatch = useDispatch();
-  const items = useSelector((state) => state.cart.items);
+  const [modalActive, setModalActive] = useState<boolean>(true);
+  const { items, totalPrice, totalCount } = useSelector(selectCart);
+  const onClickClear = () => {
+    dispatch(clearItems());
+  };
+
+  if (!totalPrice) {
+    return <CartEmpty />;
+  }
 
   return (
     <div className="container container--cart">
@@ -81,23 +92,21 @@ const Cart = () => {
               ></path>
             </svg>
 
-            <span>Очистить корзину</span>
+            <span onClick={onClickClear}>Очистить корзину</span>
           </div>
         </div>
         <div className="content__items">
-          {items.map((item) => (
+          {items.map((item: any) => (
             <CartItem key={item.id} {...item} />
           ))}
         </div>
         <div className="cart__bottom">
           <div className="cart__bottom-details">
             <span>
-              {" "}
-              Всего пицц: <b>3 шт.</b>{" "}
+              Всего пицц: <b>{totalCount} шт.</b>
             </span>
             <span>
-              {" "}
-              Сумма заказа: <b>900 ₽</b>{" "}
+              Сумма заказа: <b>{totalPrice} ₽</b>
             </span>
           </div>
           <div className="cart__bottom-buttons">
@@ -123,9 +132,9 @@ const Cart = () => {
 
               <span>Вернуться назад</span>
             </Link>
-            <div className="button pay-btn">
-              <span>Оплатить сейчас</span>
-            </div>
+            <button className="button pay-btn">
+              <span>Оформить сейчас</span>
+            </button>
           </div>
         </div>
       </div>

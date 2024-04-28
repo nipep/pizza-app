@@ -1,19 +1,45 @@
-import { useDispatch } from "react-redux";
-import { addItem, minusItem } from "../../redux/slices/cartSlice";
+import { addItem, minusItem, removeItem } from "../../redux/slices/cart/slice";
+import { cartItemsState } from "../../redux/slices/cart/types";
+import React from "react";
+import { useAppDispatch } from "../../redux/store";
 
-const CartItem = ({ id, imageUrl, name, price, type, count }) => {
-  const dispatch = useDispatch();
+type CartItemProps = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  price: number;
+  type: number;
+  count: number;
+  size: number;
+};
+
+const CartItem: React.FC<CartItemProps> = ({
+  id,
+  imageUrl,
+  name,
+  price,
+  type,
+  count,
+  size,
+}) => {
+  const dispatch = useAppDispatch();
 
   const onClickPlus = () => {
     dispatch(
       addItem({
         id,
-      })
+      } as cartItemsState)
     );
   };
 
   const onClickMinus = () => {
-    dispatch(minusItem({ id }));
+    if (count > 0) {
+      dispatch(minusItem(id));
+    }
+  };
+
+  const onClickRemove = () => {
+    dispatch(removeItem(id));
   };
 
   return (
@@ -23,10 +49,15 @@ const CartItem = ({ id, imageUrl, name, price, type, count }) => {
       </div>
       <div className="cart__item-info">
         <h3>{name}</h3>
-        <p>{type}, 26 см.</p>
+        <p>
+          {type}, {size} см.
+        </p>
       </div>
       <div className="cart__item-count">
-        <div className="button button--outline button--circle cart__item-count-minus">
+        <button
+          onClick={onClickMinus}
+          className="button button--outline button--circle cart__item-count-minus"
+        >
           <svg
             width="10"
             height="10"
@@ -43,7 +74,7 @@ const CartItem = ({ id, imageUrl, name, price, type, count }) => {
               fill="#EB5A1E"
             ></path>
           </svg>
-        </div>
+        </button>
         <b>{count}</b>
         <button
           onClick={onClickPlus}
@@ -72,7 +103,7 @@ const CartItem = ({ id, imageUrl, name, price, type, count }) => {
       </div>
       <div className="cart__item-remove">
         <button
-          onClick={onClickMinus}
+          onClick={onClickRemove}
           className="button button--outline button--circle"
         >
           <svg

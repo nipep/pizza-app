@@ -23,6 +23,38 @@ body {
 .content {
   padding: 40px 0;
 
+  &__error-info{
+    margin: 60px auto;
+    width: 580px;
+    text-align: center;
+
+    
+
+    h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    p { 
+      font-size: 18px;
+      line-height: 145.4%;
+      letter-spacing: 0.01em;
+      color: #777777;
+    }
+
+    icon {
+      position: relative;
+      top: 2px;
+    }
+
+    img {
+      display: block;
+      width: 300px;
+      margin: 45px auto 60px;
+    }
+  }
+
+
   @media (max-width: 600px) {
     padding: 20px 0;
   }
@@ -114,7 +146,6 @@ body {
     justify-content: space-between;
     align-items: center;
   }
-
   .content__title {
     display: flex;
     align-items: center;
@@ -336,7 +367,7 @@ body {
   }
 
   &--empty {
-    margin: 0 auto;
+    margin: 75px auto;
     width: 560px;
     text-align: center;
 
